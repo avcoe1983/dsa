@@ -2,7 +2,7 @@
 #include <fstream>
 using namespace std;
 
-class Student {
+class student {
 public:
     int roll;
     char div;
@@ -11,9 +11,9 @@ public:
     void take() {
         cout << "\nEnter name: ";
         cin >> name;
-        cout << "\nEnter roll no: ";
+        cout << "Enter roll no: ";
         cin >> roll;
-        cout << "\nEnter div: ";
+        cout << "Enter div: ";
         cin >> div;
     }
 
@@ -25,41 +25,32 @@ public:
 };
 
 int main() {
-    int ch, n;
+    int ch;
 
     do {
-        cout << "\n1. Create and Write\n2. Read\n3. Search\n4. Append\n5. Delete\n0. Exit\n";
+        cout << "\nMenu:\n1. Create and write\n2. Read\n3. Search\n4. Append\n5. Delete\n0. Exit\n";
         cout << "Choose option: ";
         cin >> ch;
 
         switch (ch) {
             case 1: {
-                cout << "Enter number of students: ";
+                int n;
+                cout << "Enter no of students: ";
                 cin >> n;
-                Student s[10];
-                fstream fp;
-                fp.open("student.txt", ios::out | ios::binary);
-                if (!fp) {
-                    cout << "Error opening file!" << endl;
-                    break;
-                }
+                student s;
+                fstream fp("student.txt", ios::out | ios::binary);
                 for (int i = 0; i < n; i++) {
-                    s[i].take();
-                    fp.write(reinterpret_cast<char*>(&s[i]), sizeof(s[i]));
+                    s.take();
+                    fp.write((char*)&s, sizeof(s));
                 }
                 fp.close();
                 break;
             }
 
             case 2: {
-                fstream fr;
-                fr.open("student.txt", ios::in | ios::binary);
-                if (!fr) {
-                    cout << "Error opening file!" << endl;
-                    break;
-                }
-                Student s1;
-                while (fr.read(reinterpret_cast<char*>(&s1), sizeof(s1))) {
+                student s1;
+                fstream fr("student.txt", ios::in | ios::binary);
+                while (fr.read((char*)&s1, sizeof(s1))) {
                     s1.put();
                 }
                 fr.close();
@@ -68,42 +59,33 @@ int main() {
 
             case 3: {
                 int r, flag = 0;
+                student s;
                 cout << "Enter roll no to be searched: ";
                 cin >> r;
-                fstream fs;
-                fs.open("student.txt", ios::in | ios::binary);
-                if (!fs) {
-                    cout << "Error opening file!" << endl;
-                    break;
-                }
-                Student s;
-                while (fs.read(reinterpret_cast<char*>(&s), sizeof(s))) {
+                fstream fs("student.txt", ios::in | ios::binary);
+                while (fs.read((char*)&s, sizeof(s))) {
                     if (s.roll == r) {
-                        cout << "Record found\n";
+                        cout << "Record found:\n";
                         s.put();
                         flag = 1;
                         break;
                     }
                 }
-                fs.close();
-                if (!flag)
+                if (flag == 0)
                     cout << "Record not found\n";
+                fs.close();
                 break;
             }
 
             case 4: {
-                cout << "Enter number of students you want to add: ";
-                cin >> n;
-                Student s[10];
-                fstream fa;
-                fa.open("student.txt", ios::app | ios::binary);
-                if (!fa) {
-                    cout << "Error opening file!" << endl;
-                    break;
-                }
-                for (int i = 0; i < n; i++) {
-                    s[i].take();
-                    fa.write(reinterpret_cast<char*>(&s[i]), sizeof(s[i]));
+                int n1;
+                student s;
+                fstream fa("student.txt", ios::app | ios::binary);
+                cout << "Enter number of students to append: ";
+                cin >> n1;
+                for (int i = 0; i < n1; i++) {
+                    s.take();
+                    fa.write((char*)&s, sizeof(s));
                 }
                 fa.close();
                 break;
@@ -111,36 +93,37 @@ int main() {
 
             case 5: {
                 int delroll, flag = 0;
-                cout << "Enter roll to be deleted: ";
+                student s;
+                fstream fp("student.txt", ios::in | ios::binary);
+                fstream fp1("temp.txt", ios::out | ios::binary);
+                cout << "Enter roll no to delete: ";
                 cin >> delroll;
-                fstream fp, fp1;
-                fp.open("student.txt", ios::in | ios::binary);
-                fp1.open("temp.txt", ios::out | ios::binary);
-                if (!fp || !fp1) {
-                    cout << "Error opening file!" << endl;
-                    break;
-                }
-                Student s;
-                while (fp.read(reinterpret_cast<char*>(&s), sizeof(s))) {
+                while (fp.read((char*)&s, sizeof(s))) {
                     if (s.roll == delroll) {
-                        cout << "Record found\n";
+                        cout << "Record to be deleted:\n";
                         s.put();
                         flag = 1;
                     } else {
-                        fp1.write(reinterpret_cast<char*>(&s), sizeof(s));
+                        fp1.write((char*)&s, sizeof(s));
                     }
                 }
                 fp.close();
                 fp1.close();
-                if (flag) {
-                    remove("student.txt");
-                    rename("temp.txt", "student.txt");
-                } else {
+                remove("student.txt");
+                rename("temp.txt", "student.txt");
+                if (flag == 0)
                     cout << "Record not found\n";
-                }
                 break;
             }
+
+            case 0:
+                cout << "Exiting...\n";
+                break;
+
+            default:
+                cout << "Invalid option!\n";
         }
+
     } while (ch != 0);
 
     return 0;
