@@ -1,37 +1,76 @@
-#include <iostream>    //DFS RECURSIVE
+#include <iostream>
 using namespace std;
 
-void dfs(int adj_mat[10][10], int n, int node, int visited[10])
-{
-    cout << node << " ";
-    visited[node] = 1; 
+class Graph {
+private:
+    int vertices;
+    int **adjMatrix;
 
-    for (int j = 0; j < n; j++)
-    {
-        if (adj_mat[node][j] == 1 && visited[j] == 0)
-        {
-            dfs(adj_mat, n, j, visited);
+public:
+    Graph(int v) {
+        vertices = v;
+        adjMatrix = new int*[vertices];
+        for (int i = 0; i < vertices; i++) {
+            adjMatrix[i] = new int[vertices];
+            for (int j = 0; j < vertices; j++)
+                adjMatrix[i][j] = 0;
         }
     }
-}
 
-int main()
-{
-    int n, adj_mat[10][10], visited[10] = {0};
+    void addEdge(int u, int v) {
+        adjMatrix[u][v] = 1;
+        adjMatrix[v][u] = 1; // For an undirected graph
+    }
 
-    cout << "Enter number of nodes: ";
-    cin >> n;
+    void dfsRecursive(int vertex, bool visited[]) {
+        visited[vertex] = true;
+        cout << vertex << " ";
 
-    cout << "Enter adjacency matrix:\n";
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            cin >> adj_mat[i][j];
+        for (int i = 0; i < vertices; i++) {
+            if (adjMatrix[vertex][i] == 1 && !visited[i]) {
+                dfsRecursive(i, visited);
+            }
+        }
+    }
 
-    cout << "DFS: ";
-    dfs(adj_mat, n, 0, visited);
+    void performDFS(int startVertex) {
+        bool *visited = new bool[vertices];
+        for (int i = 0; i < vertices; i++)
+            visited[i] = false;
+
+        dfsRecursive(startVertex, visited);
+        delete[] visited;
+    }
+
+    ~Graph() {
+        for (int i = 0; i < vertices; i++)
+            delete[] adjMatrix[i];
+        delete[] adjMatrix;
+    }
+};
+
+int main() {
+    int v, e;
+    cout << "Enter number of vertices: ";
+    cin >> v;
+
+    Graph graph(v);
+
+    cout << "Enter number of edges: ";
+    cin >> e;
+    cout << "Enter edges (u v):" << endl;
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        cin >> u >> v;
+        graph.addEdge(u, v);
+    }
+
+    int startVertex;
+    cout << "Enter starting vertex for DFS: ";
+    cin >> startVertex;
+
+    cout << "DFS Traversal: ";
+    graph.performDFS(startVertex);
 
     return 0;
-}                                                   
-
-
-
+}
