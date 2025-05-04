@@ -13,21 +13,21 @@ class obst
         cout<<"Enter the total no keys :";
         cin>>n;
         
-        for(i=0;i<n;i++)
-        {
-            cout<<"\nEnter key :";
-            cin>>a[i];
-        }
-        cout<<"Enter probabilities of successful search :";
         for(i=1;i<=n;i++)
         {
-            cout<<"\nEnter probability :";
+            cout<<"\nEnter key " << i << " : ";
+            cin>>a[i];
+        }
+        cout<<"Enter probabilities of successful search : ";
+        for(i=1;i<=n;i++)
+        {
+            cout<<"\nEnter probability " << i << " : ";
             cin>>p[i];
         }
-        cout<<"Enter probabilities of unsuccessful search :";
+        cout<<"Enter probabilities of unsuccessful search " << i << " : ";
         for(i=0;i<=n;i++)
         {
-            cout<<"\nEnter probability :";
+            cout<<"\nEnter probability : ";
             cin>>q[i];
         }
         
