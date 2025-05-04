@@ -2,82 +2,80 @@
 #include <vector>
 using namespace std;
 
-// Class representing a node in the tree
-class TreeNode {
-public:
-    string name;               // Name of the node (chapter, section, subsection)
-    vector<TreeNode*> children; // Children of the node
+struct Node {
+    string name;
+    vector<Node*> children;
 
-    // Constructor
-    TreeNode(string nodeName) {
-        name = nodeName;
-    }
-
-    // Add child node
-    void addChild(TreeNode* child) {
-        children.push_back(child);
-    }
-
-    // Recursive function to print the tree structure
-    void printTree(int depth = 0) {
-        for (int i = 0; i < depth; i++) cout << "  "; // Indentation for hierarchy
-        cout << "- " << name << endl;
-        for (TreeNode* child : children) {
-            child->printTree(depth + 1);
-        }
-    }
+    Node(string n) : name(n) {}
 };
 
-// Function to analyze time and space complexity
-void analyzeComplexity() {
-    cout << "\nTime Complexity: O(N) (since each node is visited once)\n";
-    cout << "Space Complexity: O(N) (for storing N nodes in the tree)\n";
+void printTree(Node* root, int depth = 0) {
+    if (!root) return;
+
+    for (int i = 0; i < depth; i++) cout << "  ";
+    cout << "|-- " << root->name << endl;
+
+    for (Node* child : root->children) {
+        printTree(child, depth + 1);
+    }
+}
+
+Node* createTree() {
+    string bookName;
+    cout << "Enter the book name: ";
+    getline(cin, bookName);
+
+    Node* book = new Node(bookName);
+
+    int numChapters;
+    cout << "Enter number of chapters: ";
+    cin >> numChapters;
+    cin.ignore();
+
+    for (int i = 0; i < numChapters; i++) {
+        string chapterName;
+        cout << "Enter chapter name: ";
+        getline(cin, chapterName);
+        Node* chapter = new Node(chapterName);
+        book->children.push_back(chapter);
+
+        int numSections;
+        cout << "Enter number of sections in " << chapterName << ": ";
+        cin >> numSections;
+        cin.ignore();
+
+        for (int j = 0; j < numSections; j++) {
+            string sectionName;
+            cout << "Enter section name: ";
+            getline(cin, sectionName);
+            Node* section = new Node(sectionName);
+            chapter->children.push_back(section);
+
+            int numSubsections;
+            cout << "Enter number of subsections in " << sectionName << ": ";
+            cin >> numSubsections;
+            cin.ignore();
+
+            for (int k = 0; k < numSubsections; k++) {
+                string subsectionName;
+                cout << "Enter subsection name: ";
+                getline(cin, subsectionName);
+                Node* subsection = new Node(subsectionName);
+                section->children.push_back(subsection);
+            }
+        }
+    }
+
+    return book;
 }
 
 int main() {
-    // Creating the root node (Book)
-    TreeNode* book = new TreeNode("Book: Data Structures");
+    Node* book = createTree();
+    cout << "\nBook Structure:\n";
+    printTree(book);
 
-    
-
-    // Adding chapters
-    TreeNode* chapter1 = new TreeNode("Chapter 1: Introduction");
-    TreeNode* chapter2 = new TreeNode("Chapter 2: Trees");
-
-    // Adding sections to Chapter 1
-    TreeNode* section1_1 = new TreeNode("Section 1.1: Basics");
-    TreeNode* section1_2 = new TreeNode("Section 1.2: Applications");
-
-    chapter1->addChild(section1_1);
-    chapter1->addChild(section1_2);
-
-    // Adding subsections to Section 1.1
-    TreeNode* subsection1_1_1 = new TreeNode("Subsection 1.1.1: Definition");
-    TreeNode* subsection1_1_2 = new TreeNode("Subsection 1.1.2: Examples");
-
-    section1_1->addChild(subsection1_1_1);
-    section1_1->addChild(subsection1_1_2);
-
-    // Adding sections to Chapter 2
-    TreeNode* section2_1 = new TreeNode("Section 2.1: Binary Trees");
-    TreeNode* section2_2 = new TreeNode("Section 2.2: Binary Search Trees");
-
-    chapter2->addChild(section2_1);
-    chapter2->addChild(section2_2);
-
-    // Adding chapters to the book
-    book->addChild(chapter1);
-    book->addChild(chapter2);
-
-    // Printing the book structure
-    cout << "Book Structure:\n";
-    book->printTree();
-
-    // Analyze time and space complexity
-    analyzeComplexity();
-
-    // Freeing dynamically allocated memory
-    delete book; // This would ideally require recursive deletion of all children, but omitted for brevity.
+    // Memory cleanup
+    delete book;
 
     return 0;
 }
