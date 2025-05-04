@@ -50,9 +50,9 @@ void mar::create()
         n--;
         hfy(0);
     }     
-    cout<<"Maximum marks obtained in the subject:="<<endl;
+    cout<<"Maximum marks obtained in the subject:= ";
     cout<<arr[z-1]<<endl;
-    cout<<"Minimum marks obtained in the subject:="<<endl;
+    cout<<"Minimum marks obtained in the subject:= ";
     cout<<arr[0]<<endl;
     
 }
