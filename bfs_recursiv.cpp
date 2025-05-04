@@ -1,43 +1,86 @@
-#include <iostream>   //BFS RECURSIVE
+#include <iostream>
 using namespace std;
 
-void bfs_recursive(int adj_mat[10][10], int n, int queue[10], int &front, int &rear, int visited[10])
-{
-    if (front == rear)
-        return;
+class Graph {
+private:
+    int vertices;
+    int **adjMatrix;
 
-    int node = queue[front++];
-    cout << node << " ";
- 
-    for (int j = 0; j < n; j++)
-    {
-        if (adj_mat[node][j] == 1 && visited[j] == 0)
-        {
-            queue[rear++] = j;
-            visited[j] = 1;
+public:
+    Graph(int v) {
+        vertices = v;
+        adjMatrix = new int*[vertices];
+        for (int i = 0; i < vertices; i++) {
+            adjMatrix[i] = new int[vertices];
+            for (int j = 0; j < vertices; j++)
+                adjMatrix[i][j] = 0;
         }
     }
 
-    bfs_recursive(adj_mat, n, queue, front, rear, visited);
-}
+    void addEdge(int u, int v) {
+        adjMatrix[u][v] = 1;
+        adjMatrix[v][u] = 1; // For an undirected graph
+    }
 
-int main()
-{
-    int n, adj_mat[10][10], visited[10] = {0}, queue[10], front = 0, rear = 0;
+    void bfsRecursive(int queue[], bool visited[], int front, int rear) {
+        if (front > rear) return; // Base case: Stop when queue is empty
 
-    cout << "Enter number of nodes: ";
-    cin >> n;
+        int vertex = queue[front++];
+        cout << vertex << " ";
 
-    cout << "Enter adjacency matrix:\n";
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            cin >> adj_mat[i][j];
+        for (int i = 0; i < vertices; i++) {
+            if (adjMatrix[vertex][i] == 1 && !visited[i]) {
+                visited[i] = true;
+                queue[++rear] = i;
+            }
+        }
 
-    visited[0] = 1;
-    queue[rear++] = 0;
+        bfsRecursive(queue, visited, front, rear);
+    }
 
-    cout << "BFS: ";
-    bfs_recursive(adj_mat, n, queue, front, rear, visited);
+    void performBFS(int startVertex) {
+        bool *visited = new bool[vertices]();
+        int *queue = new int[vertices];
+
+        int front = 0, rear = 0;
+        queue[rear] = startVertex;
+        visited[startVertex] = true;
+
+        bfsRecursive(queue, visited, front, rear);
+
+        delete[] visited;
+        delete[] queue;
+    }
+
+    ~Graph() {
+        for (int i = 0; i < vertices; i++)
+            delete[] adjMatrix[i];
+        delete[] adjMatrix;
+    }
+};
+
+int main() {
+    int v, e;
+    cout << "Enter number of vertices: ";
+    cin >> v;
+
+    Graph graph(v);
+
+    cout << "Enter number of edges: ";
+    cin >> e;
+    cout << "Enter edges (u v):" << endl;
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        cin >> u >> v;
+        graph.addEdge(u, v);
+    }
+
+    int startVertex;
+    cout << "Enter starting vertex for BFS: ";
+    cin >> startVertex;
+
+    cout << "BFS Traversal: ";
+    graph.performBFS(startVertex);
 
     return 0;
 }
