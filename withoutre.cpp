@@ -1,148 +1,149 @@
-#include <iostream>
-#include <string.h>
-#define max 10
+#include<iostream>
+#include<string.h>
 using namespace std;
-
-struct node {
+const int t=10;
+struct Node{
     char name[15];
-    long int mobno;
+    long int mob;
     int chain;
-
-    node() {
-        strcpy(name, "-");
-        mobno = 0;
-        chain = -1;
+    Node(){
+        strcpy(name,"-");
+        mob=0;
+        chain=-1;
     }
 };
-
-class hasht {
-    node ht[max];
-public:
-    int hashfun(long int);
-    void insert();
-    void display();
-    void search();
-    void del();
+class hasht{
+    Node table[t];
+    public:
+    int hashfunc(long int mob){
+        return mob%t;
+    }
+    void insert() {
+        Node s;
+        cout << "Enter name: ";
+        cin >> s.name;
+        cout << "Enter mobile number: ";
+        cin >> s.mob;
     
+        int index = hashfunc(s.mob);
+    
+       
+        if (table[index].mob == 0) {
+            table[index] = s;
+            return;
+        }
+    
+        
+        int newIndex = (index + 1) % t;
+        while (newIndex != index && table[newIndex].mob != 0) {
+            newIndex = (newIndex + 1) % t;
+        }
+    
+        if (newIndex == index) {
+            cout << "Hash table is full!\n";
+            return;
+        }
+    
+       
+        table[newIndex] = s;
+    
+        
+        int i = index;
+        while (table[i].chain != -1) {
+            i = table[i].chain;
+        }
+        table[i].chain = newIndex;
+    }
+    
+    
+    void dispaly(){
+        cout<<"hash table:";
+        for(int i=0;i<t;i++){
+            cout<<i<<" "<<table[i].name<<" "<<table[i].mob<<" "<<table[i].chain<<endl;
+        }
+    }
+    void search(){
+        long int number;
+        cout<<"enter a mobno to search:";
+        cin>>number;
+        int index=hashfunc(number);
+        while(index!=-1){
+            if(table[index].mob==number){
+                cout<<"mob number is found at index:"<<index<<endl;
+                return;
+            }
+            index=table[index].chain;
+        }
+        cout<<"mobile number is not found:";
+    }
+    void del(){
+        long int num;
+        cout<<"enter a mob number to delete:";
+        cin>>num;
+        int index=hashfunc(num);
+        int prev=-1;
+        while(index!=-1){
+            if(table[index].mob==num){
+                if(table[index].chain==-1){
+                    strcpy(table[index].name,"-");
+                    table[index].mob=0;
+                    table[index].chain=-1;
+                }
+                else{
+                    int next=table[index].chain;
+                    table[index]=table[next];
+                    strcpy(table[index].name,"-");
+                    table[index].mob=0;
+                    table[index].chain=-1;
+
+                }
+                if(prev!=-1){
+                    table[prev].chain=-1;
+                }
+                cout<<"record deleted:";
+                return;
+            }
+            prev=index;
+            index=table[index].chain;
+        }
+        cout<<"number is not found:";
+    }
 };
-
-int hasht::hashfun(long int num) {
-    return (num % max);
-}
-
-void hasht::insert() {
-    int ind, prev;
-    node S;
-    cout << "Enter name and mobile number of a person:" << endl;
-    cin >> S.name >> S.mobno;
-
-    ind = hashfun(S.mobno);
-    if (ht[ind].mobno == 0) {
-        ht[ind] = S;
-    } else {
-        prev = ind;
-        while (ht[ind].mobno != 0) {
-            ind = (ind + 1) % max;  
-        }
-        ht[ind] = S;
-        ht[prev].chain = ind;    
-    }
-}
-
-
-void hasht::display() {
-    cout << "Index\tName\t\tMobile Number\tChain" << endl;
-    for (int i = 0; i < max; i++) {
-        cout << i << "\t" << ht[i].name << "\t\t" << ht[i].mobno << "\t\t" << ht[i].chain << endl;
-    }
-}
-
-void hasht::search(){
-    long int num;
-    int ind;
-    cout<<"enter the no. which you want to be search:";
-    cin>>num;
-    ind=hashfun(num);
-    while(ind != -1){
-        if(num==ht[ind].mobno){
-            cout<<"mobile no. is present at index: "<<num<<endl;
-            return ;
-        }
-        ind=ht[ind].chain;
-    }
-}
-
-void hasht::del(){
-    long int num;
-    int ind,prev;
-    cout<<"which no. you want to delete :";
-    cin>>num;
-    ind=hashfun(num);
-
-    while(ind != -1){
-        if(num==ht[ind].mobno){
-            if(ht[ind].chain==-1)
-            {
-                strcpy(ht[ind].name,"-");
-                       ht[ind].mobno=0;
-                cout<<"record is deleted";
-            }
-            else{
-                int next=ht[ind].chain;
-                ht[ind]=ht[next];
-                strcpy(ht[next].name,"-");
-                ht[next].mobno=0;
-                ht[next].chain= -1;
-            }
-
-
-            {
-                if(prev != -1)
-                   ht[prev].chain= -1;
-            }
-            
-        }
-        prev=ind;
-        ind=ht[ind].chain;
-    }
-}
-
-
 int main(){
-    int cho;
-    hasht h;
-    char a,y,Y;
+    hasht ht;
+    int choice;
+    char again;
     do{
-        cout<<"1.insert \n2.display\n3.serach\n4.deleted\n5.exit\nenter the choice: ";
-        cin>>cho;
-        switch(cho){
+        cout<<"1-insert element:\n";
+        cout<<"2-display element:\n";
+        cout<<"3-serach elments:\n";
+        cout<<"4-delete elements:\n";
+        cout<<"enter a your choice:";
+        cin>>choice;
+        switch(choice){
             case 1:
-              h.insert();
-              break;
+            ht.insert();
+            break;
             case 2:
-               h.display();
-               break;
-
+            ht.dispaly();
+            break;
             case 3:
-               h.search();
-               break;
-
+            ht.search();
+            break;
             case 4:
-               h.del();
-               break;
+            ht.del();
+            break;
+            default:
+            cout<<"thala for reason:";
 
 
-            case 5:
-              cout<<"exit"<<endl;
-              break;
-
-            default :
-               cout<<"invalid  choice"<<endl;
-                break;
         }
-        cout<<"you will display other case 1.yes , 2.no =";
-        cin>>a;
+        
+            cout<<"do you wwant to perform again:(y/n)";
+            cin>>again;
+       
+        
 
-    }while(a ='y');
-     return 0 ;
+    }while(again=='y'||again=='Y');
+    return 0;
 }
